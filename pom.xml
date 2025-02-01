@@ -15,7 +15,7 @@
         <!-- mvn settings -->
         <!-- see: https://ralph.blog.imixs.com/2020/12/13/migrating-to-jakarta-ee-9/ -->
         <version.mvn.compiler.plugin>3.11.0</version.mvn.compiler.plugin>
-        <version.mvn.compiler.java>11</version.mvn.compiler.java>
+        <version.mvn.compiler.java>17</version.mvn.compiler.java>
         <!-- the ess project version -->
         <!-- the revision property should to be used in order for child poms
         to access the version of the parent pom, but yet there are issues
@@ -24,11 +24,11 @@
         <version.esslibs>1.0-SNAPSHOT</version.esslibs>
         <revision>${version.esslibs}</revision>
         <!-- specs versions -->
-        <version.microprofile>5.0</version.microprofile>
-        <version.jakartaee>9.1.0</version.jakartaee>
+        <version.microprofile>6.0</version.microprofile>
+        <version.jakartaee>10.0.0</version.jakartaee>
         <!-- server versions -->
-        <version.tomee.plugin>9.1.2</version.tomee.plugin>
-        <version.tomee.server>9.1.2</version.tomee.server>
+        <version.tomee.plugin>10.0.0</version.tomee.plugin>
+        <version.tomee.server>10.0.0</version.tomee.server>
         <!-- additional jakarta libs versions -->
         <version.jpa>3.1.0</version.jpa>
         <version.transactionapi>2.0.1</version.transactionapi>
@@ -39,11 +39,11 @@
         <version.commons.io>2.15.1</version.commons.io>
         <version.commons.lang>2.6</version.commons.lang>
         <!-- http+rest client libs. -->
-        <version.resteasy.client>6.2.7.Final</version.resteasy.client>
-        <version.jackson>2.16.1</version.jackson>
+        <version.resteasy.client>6.2.11.Final</version.resteasy.client>
+        <version.jackson>2.18.2</version.jackson>
         <version.httpclient>4.5.14</version.httpclient>
         <version.httpasyncclient>4.1.5</version.httpasyncclient>
-        <version.jakartars.wsv>3.1.0</version.jakartars.wsv>
+        <version.jakartars.wsv>4.0.0</version.jakartars.wsv>
         <!-- further settings -->
         <plugin.fork.embedded>true</plugin.fork.embedded>
         <maven.compiler.source>1.8</maven.compiler.source>
