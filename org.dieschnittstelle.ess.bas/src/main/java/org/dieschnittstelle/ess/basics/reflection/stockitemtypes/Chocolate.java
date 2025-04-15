@@ -1,15 +1,16 @@
 package org.dieschnittstelle.ess.basics.reflection.stockitemtypes;
 
 import org.dieschnittstelle.ess.basics.IStockItem;
+import org.dieschnittstelle.ess.basics.annotations.DisplayAs;
 
 import static org.dieschnittstelle.ess.utils.Utils.*;
 
 public class Chocolate implements IStockItem {
 
 	private int units;
-	
+
 	private String brandname;
-	
+
 	private int price;
 	
 	public Chocolate() {

@@ -2,6 +2,7 @@ package org.dieschnittstelle.ess.basics;
 
 
 import org.dieschnittstelle.ess.basics.annotations.AnnotatedStockItemBuilder;
+import org.dieschnittstelle.ess.basics.annotations.DisplayAs;
 import org.dieschnittstelle.ess.basics.annotations.StockItemProxyImpl;
 
 import java.lang.reflect.Field;
@@ -46,18 +47,14 @@ public class ShowAnnotations {
 			//  is required here.
 
 			Class klass = instance.getClass();
-			show("class is: " + klass);
 
 			Field[] attributes = klass.getDeclaredFields();
 
 			String showString ="{ "+klass.getSimpleName()+ " ";
-			show("classname "+showString);
 
 			// iterate over the so far unprocessed attributes
 			showString+=Arrays.stream(attributes)
 					.map(attr -> {
-						show("field is: " + attr);
-						show("field type is: " + attr.getType());
 
 						// determine the name of the setter
 						String gettername = getAccessorNameForField("get",attr.getName());
@@ -65,7 +62,18 @@ public class ShowAnnotations {
                         try {
 							// obtain the getter
 							Method getter = klass.getDeclaredMethod(gettername);
-							return  attr.getName()+": "+getter.invoke(instance);
+
+							// TODO BAS3: if the new @DisplayAs annotation is present on a field,
+							//  the string representation will not use the field's name, but the name
+							//  specified in the the annotation. Regardless of @DisplayAs being present
+							//  or not, the field's value will be included in the string representation.
+							String showName = attr.getName();
+							if(attr.isAnnotationPresent(DisplayAs.class)){
+								showName=attr.getAnnotation(DisplayAs.class).value();
+								show("showName: %s", showName);
+							}
+
+							return  showName+": "+getter.invoke(instance);
                         } catch (Exception e) {
                             throw new RuntimeException(e);
                         }
@@ -74,11 +82,6 @@ public class ShowAnnotations {
 
 			showString+="}";
 			show(showString);
-
-			// TODO BAS3: if the new @DisplayAs annotation is present on a field,
-			//  the string representation will not use the field's name, but the name
-			//  specified in the the annotation. Regardless of @DisplayAs being present
-			//  or not, the field's value will be included in the string representation.
 
 		}
 		catch (Exception e) {
