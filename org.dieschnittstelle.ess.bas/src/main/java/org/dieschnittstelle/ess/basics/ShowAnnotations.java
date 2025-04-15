@@ -4,6 +4,11 @@ package org.dieschnittstelle.ess.basics;
 import org.dieschnittstelle.ess.basics.annotations.AnnotatedStockItemBuilder;
 import org.dieschnittstelle.ess.basics.annotations.StockItemProxyImpl;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
 import static org.dieschnittstelle.ess.utils.Utils.*;
 
 public class ShowAnnotations {
@@ -29,7 +34,7 @@ public class ShowAnnotations {
 	 * TODO BAS2
 	 */
 	private static void showAttributes(Object instance) {
-		show("class is: " + instance.getClass());
+		show("instance: %s", instance);
 
 		try {
 
@@ -39,6 +44,36 @@ public class ShowAnnotations {
 			//  will then be built from the field names and field values.
 			//  Note that only read-access to fields via getters or direct access
 			//  is required here.
+
+			Class klass = instance.getClass();
+			show("class is: " + klass);
+
+			Field[] attributes = klass.getDeclaredFields();
+
+			String showString ="{ "+klass.getSimpleName()+ " ";
+			show("classname "+showString);
+
+			// iterate over the so far unprocessed attributes
+			showString+=Arrays.stream(attributes)
+					.map(attr -> {
+						show("field is: " + attr);
+						show("field type is: " + attr.getType());
+
+						// determine the name of the setter
+						String gettername = getAccessorNameForField("get",attr.getName());
+
+                        try {
+							// obtain the getter
+							Method getter = klass.getDeclaredMethod(gettername);
+							return  attr.getName()+": "+getter.invoke(instance);
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
+                        }
+					}).
+					collect(Collectors.joining(", "));
+
+			showString+="}";
+			show(showString);
 
 			// TODO BAS3: if the new @DisplayAs annotation is present on a field,
 			//  the string representation will not use the field's name, but the name
@@ -51,6 +86,13 @@ public class ShowAnnotations {
 			throw new RuntimeException("showAnnotations(): exception occurred: " + e,e);
 		}
 
+	}
+
+	/*
+	 * create getter/setter names
+	 */
+	public static String getAccessorNameForField(String accessor,String fieldName) {
+		return accessor + fieldName.substring(0,1).toUpperCase() + fieldName.substring(1);
 	}
 
 }
