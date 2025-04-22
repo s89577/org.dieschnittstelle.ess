@@ -1,13 +1,21 @@
 package org.dieschnittstelle.ess.ser.client;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.List;
 import java.util.concurrent.Future;
 
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
+import org.apache.http.StatusLine;
+import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.concurrent.FutureCallback;
+import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
 import org.apache.logging.log4j.Logger;
 import org.dieschnittstelle.ess.entities.crm.AbstractTouchpoint;
@@ -120,10 +128,11 @@ public class ShowTouchpointService {
 
 			// create a GetMethod
 
-			// UE SER1: Aendern Sie die URL von api->gui
+			// UE SER1: Aendern Sie die URL von api->gui 403 Forbidden wegen Filter: Nur Anfragen mit dem Header Accept-Language werdej akzeptiert
 			HttpGet get = new HttpGet(
 					"http://localhost:8080/api/" + (async ? "async/touchpoints" : "touchpoints"));
 
+			//get.setHeader("Accept-Language", "de,en;q=0.9");
 			logger.info("readAllTouchpoints(): about to execute request: " + get);
 
 			// mittels der <request>.setHeader() Methode koennen Header-Felder
@@ -177,6 +186,38 @@ public class ShowTouchpointService {
 		createClient();
 
 		logger.debug("client running: {}",client.isRunning());
+		try {
+
+			// create delete request for the api/touchpoints uri
+			HttpDelete delete = new HttpDelete("http://localhost:8080/api/touchpoints/"+tp.getId());
+
+			// execute the request, which will return a Future<HttpResponse> object
+			Future<HttpResponse> responseFuture = client.execute(delete, null);
+
+			// get the response from the Future object
+			HttpResponse response = responseFuture.get();
+				// log the status line
+				StatusLine statusLine = response.getStatusLine();
+				logger.info("StatusLine: " +  statusLine);
+
+				// evaluate the result using getStatusLine(), use constants in
+				// HttpStatus
+				int statusCode = statusLine.getStatusCode();
+				logger.info("StatusCode: " +  statusCode);
+
+				/* if successful: */
+				if (statusCode == HttpStatus.SC_OK) {
+					logger.info("Touchpoint successfully deleted.");
+				} else if (statusCode == HttpStatus.SC_NOT_FOUND) {
+					logger.warn("Touchpoint not found.");
+				} else {
+					logger.error("Error while deleting with Code: " + statusCode);
+				}
+		} catch (Exception e) {
+			logger.error("Error while deleting: " + e, e);
+			throw new RuntimeException(e);
+		}
+
 
 	}
 
@@ -200,34 +241,79 @@ public class ShowTouchpointService {
 		try {
 
 			// create post request for the api/touchpoints uri
+			HttpPost post = new HttpPost("http://localhost:8080/api/touchpoints");
 
 			// create an ObjectOutputStream from a ByteArrayOutputStream - the
 			// latter must be accessible via a variable
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			ObjectOutputStream oos = new ObjectOutputStream(baos);
 
 			// write the object to the output stream
+			oos.writeObject(tp); //Wandelt Objektdaten in binärformat um und schreibt in bytearrayOS
+			oos.close();
 
 			// create a ByteArrayEntity and pass it the byte array from the
 			// output stream
+			ByteArrayEntity bae = new ByteArrayEntity(baos.toByteArray());
+			baos.close();
 
 			// set the entity on the request
+			post.setEntity(bae);
 
 			// execute the request, which will return a Future<HttpResponse> object
+			Future<HttpResponse> responseFuture = client.execute(post, new FutureCallback<HttpResponse>(){
+				@Override
+				public void completed(HttpResponse response) {
+					logger.error("Request completed!");
+				}
+
+				@Override
+				public void failed(Exception ex) {
+					logger.error("Request failed: " + ex, ex);
+				}
+
+				@Override
+				public void cancelled() {
+					logger.warn("Request was cancelled");
+				}
+			});
+
+			Thread.sleep(200);
 
 			// get the response from the Future object
+			HttpResponse response = responseFuture.get();
+			try {
+				// log the status line
+				StatusLine statusLine = response.getStatusLine();
+				logger.info("StatusLine: " +  statusLine);
 
-			// log the status line
+				// evaluate the result using getStatusLine(), use constants in
+				// HttpStatus
+				int statusCode = statusLine.getStatusCode();
+				logger.info("StatusCode: " +  statusCode);
 
-			// evaluate the result using getStatusLine(), use constants in
-			// HttpStatus
+				/* if successful: */
+				if(statusCode == HttpStatus.SC_CREATED) {
+					// create an object input stream using getContent() from the
+					// response entity (accessible via getEntity())
+					HttpEntity responseEntity = response.getEntity();
+					ObjectInputStream ois = new ObjectInputStream(responseEntity.getContent());
 
-			/* if successful: */
+					// read the touchpoint object from the input stream
+					AbstractTouchpoint touchpoint = (AbstractTouchpoint) ois.readObject();
+					ois.close();
+					logger.info("created new touchpoint: " + touchpoint);
 
-			// create an object input stream using getContent() from the
-			// response entity (accessible via getEntity())
+					// return the object that you have read from the response
+					return touchpoint;
 
-			// read the touchpoint object from the input stream
+				}else {
+					logger.error("Request failed with status: " + statusCode);
+				}
+			} catch (Exception e) {
+				logger.error("Error reading response: " + e, e);
+			}
 
-			// return the object that you have read from the response
 			return null;
 		} catch (Exception e) {
 			logger.error("got exception: " + e, e);
