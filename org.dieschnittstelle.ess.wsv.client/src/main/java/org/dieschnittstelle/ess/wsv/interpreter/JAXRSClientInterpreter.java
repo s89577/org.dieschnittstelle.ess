@@ -54,6 +54,13 @@ public class JAXRSClientInterpreter implements InvocationHandler {
     public JAXRSClientInterpreter(Class serviceInterface,String baseurl) {
 
         // TODO: implement the constructor!
+        this.serviceInterface=serviceInterface;
+        this.baseurl=baseurl;
+        if(serviceInterface.isAnnotationPresent(Path.class)) {
+            this.commonPath=((Path) serviceInterface.getAnnotation(Path.class)).value();
+        }else{
+            throw new RuntimeException("cannot construct invocation handler. Jax-RS root rsources require a top-level");
+        }
 
         logger.info("<constructor>: " + serviceInterface + " / " + baseurl + " / " + commonPath);
     }
@@ -63,7 +70,12 @@ public class JAXRSClientInterpreter implements InvocationHandler {
     public Object invoke(Object proxy, Method meth, Object[] args)
             throws Throwable {
 
+        show("invoke(): " + meth.getName());
+
         // TODO check whether we handle the toString method and give some appropriate return value
+        if("toString".equals(meth.getName())) {
+            return "JAX-RS client proxy for "+this.serviceInterface.getName();
+        }
 
         // use a default http client
         HttpClient client = Http.createSyncClient();

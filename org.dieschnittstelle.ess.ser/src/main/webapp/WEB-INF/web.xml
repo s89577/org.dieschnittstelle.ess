@@ -50,7 +50,7 @@
 	</filter>
 	<filter-mapping>
 		<filter-name>TouchpointAPIServletFilter</filter-name>
-		<url-pattern>/api/touchpoints/*</url-pattern>
+		<servlet-name>TouchpointServiceServlet</servlet-name>
 	</filter-mapping>
 	<servlet>
 		<description></description>

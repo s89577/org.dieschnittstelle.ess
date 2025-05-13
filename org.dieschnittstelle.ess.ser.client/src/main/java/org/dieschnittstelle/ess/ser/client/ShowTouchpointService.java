@@ -194,8 +194,9 @@ public class ShowTouchpointService {
 			// execute the request, which will return a Future<HttpResponse> object
 			Future<HttpResponse> responseFuture = client.execute(delete, null);
 
-			// get the response from the Future object
-			HttpResponse response = responseFuture.get();
+			try {
+				// get the response from the Future object
+				HttpResponse response = responseFuture.get();
 				// log the status line
 				StatusLine statusLine = response.getStatusLine();
 				logger.info("StatusLine: " +  statusLine);
@@ -213,6 +214,9 @@ public class ShowTouchpointService {
 				} else {
 					logger.error("Error while deleting with Code: " + statusCode);
 				}
+			} catch (Exception e) {
+				logger.error("Error reading response: " + e, e);
+			}
 		} catch (Exception e) {
 			logger.error("Error while deleting: " + e, e);
 			throw new RuntimeException(e);
@@ -280,9 +284,10 @@ public class ShowTouchpointService {
 
 			Thread.sleep(200);
 
-			// get the response from the Future object
-			HttpResponse response = responseFuture.get();
 			try {
+				// get the response from the Future object
+				HttpResponse response = responseFuture.get();
+
 				// log the status line
 				StatusLine statusLine = response.getStatusLine();
 				logger.info("StatusLine: " +  statusLine);
