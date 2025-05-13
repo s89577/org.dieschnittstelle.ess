@@ -268,7 +268,7 @@ public class ShowTouchpointService {
 			Future<HttpResponse> responseFuture = client.execute(post, new FutureCallback<HttpResponse>(){
 				@Override
 				public void completed(HttpResponse response) {
-					logger.error("Request completed!");
+					logger.info("Request completed!");
 				}
 
 				@Override
