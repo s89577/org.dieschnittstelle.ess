@@ -50,14 +50,14 @@ public class AccessRESTServiceWithInterpreter {
 
 
         // TODO: comment-in the call to delete() once this is handled by the invocation handler
-//		// 2) delete the touchpoint if there is one
-//		if (tps.size() > 0) {
-//          step();
-//			show("deleted: "
-//					+ serviceProxy.deleteTouchpoint(tps.get(0).getId()));
-//		}
-//
-//		// 3) create a new touchpoint
+		// 2) delete the touchpoint if there is one
+		if (tps.size() > 0) {
+          step();
+			show("deleted: "
+					+ serviceProxy.deleteTouchpoint(tps.get(0).getId()));
+		}
+
+		// 3) create a new touchpoint
         step();
 
         Address addr = new Address("Luxemburger Strasse", "10", "13353",
@@ -73,23 +73,23 @@ public class AccessRESTServiceWithInterpreter {
         }
 
         // TODO: comment-in the call to read() once this is handled
-//		/*
-//		 * 4) read out the new touchpoint
-//		 */
-//		show("read created: " + serviceProxy.readTouchpoint(tp.getId()));
-//
+		/*
+		 * 4) read out the new touchpoint
+		 */
+		show("read created: " + serviceProxy.readTouchpoint(tp.getId()));
+
 
         // TODO: comment-in the call to update() once this is handled
-//		/*
-//		 * 5) update the touchpoint
-//		 */
-//		// change the name
-//		step();
-//		tp.setName("BHT WSV Mensa");
-//
-//
-//		tp = serviceProxy.updateTouchpoint(tp.getId(), tp);
-//		show("updated: " + tp);
+		/*
+		 * 5) update the touchpoint
+		 */
+		// change the name
+		step();
+		tp.setName("BHT WSV Mensa");
+
+
+		tp = serviceProxy.updateTouchpoint(tp.getId(), tp);
+		show("updated: " + tp);
 
     }
 
