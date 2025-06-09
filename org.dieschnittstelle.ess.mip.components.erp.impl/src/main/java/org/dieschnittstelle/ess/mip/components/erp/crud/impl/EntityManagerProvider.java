@@ -21,6 +21,7 @@ public class EntityManagerProvider {
 
     }
 
+    //Annotationen, die das Objekt nach außen hin zur Verfügung stellen, damit es genutzt werden kann
     @Produces
     @ERPDataAccessor
     @PersistenceContext(unitName = "erp_PU")

@@ -13,6 +13,7 @@ import jakarta.json.bind.annotation.JsonbTypeDeserializer;
 import jakarta.json.bind.annotation.JsonbTypeSerializer;
 import jakarta.persistence.*;
 
+@Entity
 @JsonbTypeSerializer(JsonbJsonTypeInfoHandler.class)
 public class Campaign extends AbstractProduct implements Serializable {
 

@@ -55,13 +55,18 @@ public class ProductCRUDImpl implements ProductCRUD {
 
     @Override
     public boolean deleteProduct(long productID) {
-        //TODO?
-        entityManager.remove(entityManager.find(AbstractProduct.class, productID));
+        AbstractProduct product=entityManager.find(AbstractProduct.class, productID);
+        if(product!=null) {
+            entityManager.remove(product);
+            return true;
+        }
         return false;
     }
 
     @Override
     public List<Campaign> getCampaignsForProduct(long productID) {
-        return List.of();
+        Query q= entityManager.createQuery("SELECT c FROM Campaign c JOIN c.bundles b WHERE b.product.id= :productID");
+        q.setParameter("productID", productID);
+        return q.getResultList();
     }
 }
