@@ -7,6 +7,7 @@ import org.apache.logging.log4j.Logger;
 import jakarta.persistence.*;
 import java.io.Serializable;
 
+//TODO: fragen ob embeddable richtig wegen Komposition
 @Embeddable //(Da keine richtige Entität, kein Crud Zugriff und nur innerhalb von Campaigns verwendet)
 public class ProductBundle implements Serializable {
 

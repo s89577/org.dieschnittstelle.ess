@@ -16,8 +16,8 @@ import java.util.List;
 import static org.dieschnittstelle.ess.utils.Utils.show;
 
 @ApplicationScoped //(Eine Instanz für die Laufzeit der Anwendung, die beim Start erzeigt wird -> Bei RequestScoped, wäre bei jeder Anfrage eine neue Instant)
-@Transactional
-@Logged
+@Transactional //Nötig für DB Transaktion
+@Logged //Für Debugging
 public class ProductCRUDImpl implements ProductCRUD {
     public ProductCRUDImpl() {
         show("constructor(): ProductCRUDImpl");

@@ -2,9 +2,12 @@ package org.dieschnittstelle.ess.mip.components.erp.crud.impl;
 
 import java.util.List;
 
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.transaction.Transactional;
 import org.dieschnittstelle.ess.entities.erp.IndividualisedProductItem;
 import org.dieschnittstelle.ess.entities.erp.PointOfSale;
 import org.dieschnittstelle.ess.entities.erp.StockItem;
+import org.dieschnittstelle.ess.utils.interceptors.Logged;
 
 /*
  * TODO MIP+JPA3/4/6:
