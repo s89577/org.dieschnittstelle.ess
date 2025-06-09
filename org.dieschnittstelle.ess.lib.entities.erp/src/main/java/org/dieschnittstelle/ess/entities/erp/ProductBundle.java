@@ -7,6 +7,7 @@ import org.apache.logging.log4j.Logger;
 import jakarta.persistence.*;
 import java.io.Serializable;
 
+@Embeddable //(Da keine richtige Entität, kein Crud Zugriff und nur innerhalb von Campaigns verwendet)
 public class ProductBundle implements Serializable {
 
 	protected static Logger logger = org.apache.logging.log4j.LogManager.getLogger(ProductBundle.class);
@@ -18,6 +19,7 @@ public class ProductBundle implements Serializable {
 
 	private long id;
 
+	@ManyToOne
 	private IndividualisedProductItem product;
 
 	private int units;
