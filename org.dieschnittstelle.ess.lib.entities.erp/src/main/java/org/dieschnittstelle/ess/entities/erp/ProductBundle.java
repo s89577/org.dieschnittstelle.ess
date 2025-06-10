@@ -7,8 +7,8 @@ import org.apache.logging.log4j.Logger;
 import jakarta.persistence.*;
 import java.io.Serializable;
 
-//TODO: fragen ob embeddable richtig wegen Komposition
-@Embeddable //(Da keine richtige Entität, kein Crud Zugriff und nur innerhalb von Campaigns verwendet)
+//@Embeddable //(Da keine richtige Entität, kein Crud Zugriff und nur innerhalb von Campaigns verwendet)
+@Entity
 public class ProductBundle implements Serializable {
 
 	protected static Logger logger = org.apache.logging.log4j.LogManager.getLogger(ProductBundle.class);
@@ -18,12 +18,17 @@ public class ProductBundle implements Serializable {
 	 */
 	private static final long serialVersionUID = 1501911067906145681L;
 
+	@Id
+	@GeneratedValue
 	private long id;
 
 	@ManyToOne
 	private IndividualisedProductItem product;
 
 	private int units;
+
+	@ManyToOne
+	private Campaign campaign;
 
 	public ProductBundle() {
 		logger.debug("<constructor>");
@@ -40,6 +45,10 @@ public class ProductBundle implements Serializable {
 
 	public void setProduct(IndividualisedProductItem product) {
 		this.product = product;
+	}
+
+	public void setCampaign(Campaign campaign) {
+		this.campaign = campaign;
 	}
 
 	public int getUnits() {

@@ -1,4 +1,4 @@
-package org.dieschnittstelle.ess.mip.components.erp;
+package org.dieschnittstelle.ess.mip.components.erp.impl;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;

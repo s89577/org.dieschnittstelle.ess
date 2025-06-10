@@ -24,8 +24,8 @@ public class Campaign extends AbstractProduct implements Serializable {
 	 */
 	private static final long serialVersionUID = 4407600000386810001L;
 
-	//FRAGEN ob richtig wegen Komposition
-	@ElementCollection
+	//@ElementCollection
+	@OneToMany(mappedBy = "campaign", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<ProductBundle> bundles;
 
 	public Campaign() {
@@ -43,10 +43,14 @@ public class Campaign extends AbstractProduct implements Serializable {
 	}
 
 	public void setBundles(List<ProductBundle> bundles) {
-		this.bundles = bundles;
+		this.bundles.clear();
+		for (ProductBundle bundle : bundles) {
+			addBundle(bundle);
+		}
 	}
 
 	public void addBundle(ProductBundle bundle) {
+		bundle.setCampaign(this);
 		this.bundles.add(bundle);
 	}
 

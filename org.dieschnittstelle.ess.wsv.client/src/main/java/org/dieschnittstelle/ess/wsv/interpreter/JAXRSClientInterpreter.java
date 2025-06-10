@@ -88,7 +88,7 @@ public class JAXRSClientInterpreter implements InvocationHandler {
             if (meth.getParameterAnnotations()[0].length > 0 && meth.getParameterAnnotations()[0][0].annotationType() == PathParam.class) {
                 // TODO: handle PathParam on the first argument - do not forget that in this case we might have a second argument providing a requestBodyData
                 // TODO: if we have a path param, we need to replace the corresponding pattern in the requestUrl with the parameter value
-                Annotation[] firstArgAnnot = meth.getParameterAnnotations()[0]; //Eigenes TODO: Fragen, ob wirklich nur für diesen Case wo nur erstes Arg PathParam ist
+                Annotation[] firstArgAnnot = meth.getParameterAnnotations()[0];
                 if(firstArgAnnot.length >0&&firstArgAnnot[0] instanceof PathParam) {
                     PathParam pathParamAnnot = (PathParam) firstArgAnnot[0];
                     requestUrl = requestUrl.replace("{" + pathParamAnnot.value() + "}", args[0].toString());
