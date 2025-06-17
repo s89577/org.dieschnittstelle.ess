@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.dieschnittstelle.ess.mip.components.crm.api.CrmException;
 import org.dieschnittstelle.ess.entities.crm.AbstractTouchpoint;
+import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
 public interface TouchpointCRUD {
 

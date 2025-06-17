@@ -2,8 +2,11 @@ package org.dieschnittstelle.ess.mip.components.crm.crud.impl;
 
 import java.util.List;
 
+import jakarta.annotation.Priority;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Alternative;
 import jakarta.inject.Inject;
+import jakarta.interceptor.Interceptor;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import jakarta.transaction.Transactional;
