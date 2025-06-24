@@ -55,14 +55,12 @@ public class PurchaseServiceImpl implements PurchaseService{
     private AbstractTouchpoint touchpoint;
 
     @Inject
-    private TouchpointCRUD touchpointCRUD;
-
-    @Inject
     private ShoppingCartServiceImpl shoppingCartService;
 
     @Inject
     private CustomerCRUD customerCRUD;
 
+    @Inject
     private TouchpointAccess touchpointAccess;
 
     /*
@@ -154,7 +152,7 @@ public class PurchaseServiceImpl implements PurchaseService{
     @Override
     public void purchaseCartAtTouchpointForCustomer(long shoppingCartId, long touchpointId, long customerId) throws ShoppingException {
         this.customer = (Customer) customerCRUD.readCustomer(customerId);
-        this.touchpoint = (AbstractTouchpoint) touchpointCRUD.readTouchpoint(touchpointId);
+        this.touchpoint = touchpointAccess.readTouchpoint(touchpointId);
         this.shoppingCart = new ShoppingCartEntity();
         this.shoppingCartService.getItems(shoppingCartId).forEach(
                 item->this.shoppingCart.addItem(new ShoppingCartItem(item.getErpProductId(),item.getUnits(),item.isCampaign()))
