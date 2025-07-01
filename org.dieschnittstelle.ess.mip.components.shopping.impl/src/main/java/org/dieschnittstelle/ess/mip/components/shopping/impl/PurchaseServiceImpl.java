@@ -19,6 +19,7 @@ import org.dieschnittstelle.ess.mip.components.crm.api.TouchpointAccess;
 import org.dieschnittstelle.ess.mip.components.crm.crud.api.CustomerCRUD;
 import org.dieschnittstelle.ess.mip.components.crm.crud.api.TouchpointCRUD;
 import org.dieschnittstelle.ess.mip.components.erp.api.StockSystem;
+import org.dieschnittstelle.ess.mip.components.erp.api.StockSystemService;
 import org.dieschnittstelle.ess.mip.components.erp.crud.api.ProductCRUD;
 import org.dieschnittstelle.ess.mip.components.shopping.api.PurchaseService;
 import org.dieschnittstelle.ess.mip.components.shopping.api.ShoppingException;
@@ -71,7 +72,7 @@ public class PurchaseServiceImpl implements PurchaseService{
     private ProductCRUD productCRUD;
 
     @Inject
-    private StockSystem stockSystem;
+    private StockSystemService stockSystemService;
 
     /*
      * verify whether campaigns are still valid
@@ -156,9 +157,9 @@ public class PurchaseServiceImpl implements PurchaseService{
                         try{
                             int totalUnits = bundle.getUnits() * item.getUnits();
 
-                            int availableUnits = stockSystem.getUnitsOnStock(bundle.getProduct(), this.touchpoint.getErpPointOfSaleId());
+                            int availableUnits = stockSystemService.getUnitsOnStock(bundle.getProduct().getId(), this.touchpoint.getErpPointOfSaleId());
                             if(totalUnits <= availableUnits){
-                                stockSystem.removeFromStock(bundle.getProduct(),this.touchpoint.getErpPointOfSaleId(), totalUnits);
+                                stockSystemService.removeFromStock(bundle.getProduct().getId(),this.touchpoint.getErpPointOfSaleId(), totalUnits);
                             }else{
                                 throw new ShoppingException("Nicht genügend Produkte verfügbar");
                             }
@@ -177,9 +178,9 @@ public class PurchaseServiceImpl implements PurchaseService{
                 try{
                     int totalUnits = item.getUnits();
 
-                    int availableUnits = stockSystem.getUnitsOnStock((IndividualisedProductItem) product, this.touchpoint.getErpPointOfSaleId() );
+                    int availableUnits = stockSystemService.getUnitsOnStock(product.getId(), this.touchpoint.getErpPointOfSaleId() );
                     if(totalUnits <= availableUnits){
-                        stockSystem.removeFromStock((IndividualisedProductItem) product,this.touchpoint.getErpPointOfSaleId(), totalUnits);
+                        stockSystemService.removeFromStock(product.getId(),this.touchpoint.getErpPointOfSaleId(), totalUnits);
                     }else{
                         throw new ShoppingException("Nicht genügend Produkte verfügbar");
                     }

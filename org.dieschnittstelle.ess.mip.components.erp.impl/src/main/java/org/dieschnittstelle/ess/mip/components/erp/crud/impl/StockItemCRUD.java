@@ -8,6 +8,7 @@ import org.dieschnittstelle.ess.entities.erp.IndividualisedProductItem;
 import org.dieschnittstelle.ess.entities.erp.PointOfSale;
 import org.dieschnittstelle.ess.entities.erp.StockItem;
 import org.dieschnittstelle.ess.utils.interceptors.Logged;
+import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
 /*
  * TODO MIP+JPA3/4/6:

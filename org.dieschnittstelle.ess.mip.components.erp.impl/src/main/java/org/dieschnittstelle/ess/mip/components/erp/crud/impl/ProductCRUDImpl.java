@@ -1,8 +1,11 @@
 package org.dieschnittstelle.ess.mip.components.erp.crud.impl;
 
+import jakarta.annotation.Priority;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.context.RequestScoped;
+import jakarta.enterprise.inject.Alternative;
 import jakarta.inject.Inject;
+import jakarta.interceptor.Interceptor;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import jakarta.transaction.Transactional;
@@ -10,6 +13,7 @@ import org.dieschnittstelle.ess.entities.erp.AbstractProduct;
 import org.dieschnittstelle.ess.entities.erp.Campaign;
 import org.dieschnittstelle.ess.mip.components.erp.crud.api.ProductCRUD;
 import org.dieschnittstelle.ess.utils.interceptors.Logged;
+import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
 import java.util.List;
 
@@ -18,6 +22,8 @@ import static org.dieschnittstelle.ess.utils.Utils.show;
 @ApplicationScoped //(Eine Instanz für die Laufzeit der Anwendung, die beim Start erzeigt wird -> Bei RequestScoped, wäre bei jeder Anfrage eine neue Instant)
 @Transactional //Nötig für DB Transaktion
 @Logged //Für Debugging
+@Alternative
+@Priority(Interceptor.Priority.APPLICATION+10)
 public class ProductCRUDImpl implements ProductCRUD {
     public ProductCRUDImpl() {
         show("constructor(): ProductCRUDImpl");
