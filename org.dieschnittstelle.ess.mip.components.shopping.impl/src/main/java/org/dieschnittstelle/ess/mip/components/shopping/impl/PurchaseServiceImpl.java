@@ -10,12 +10,16 @@ import org.dieschnittstelle.ess.entities.crm.CustomerTransaction;
 import org.dieschnittstelle.ess.entities.crm.CustomerTransactionShoppingCartItem;
 import org.dieschnittstelle.ess.entities.erp.AbstractProduct;
 import org.dieschnittstelle.ess.entities.erp.Campaign;
+import org.dieschnittstelle.ess.entities.erp.IndividualisedProductItem;
+import org.dieschnittstelle.ess.entities.erp.ProductBundle;
 import org.dieschnittstelle.ess.entities.shopping.ShoppingCartItem;
 import org.dieschnittstelle.ess.mip.components.crm.api.CampaignTracking;
 import org.dieschnittstelle.ess.mip.components.crm.api.CustomerTracking;
 import org.dieschnittstelle.ess.mip.components.crm.api.TouchpointAccess;
 import org.dieschnittstelle.ess.mip.components.crm.crud.api.CustomerCRUD;
 import org.dieschnittstelle.ess.mip.components.crm.crud.api.TouchpointCRUD;
+import org.dieschnittstelle.ess.mip.components.erp.api.StockSystem;
+import org.dieschnittstelle.ess.mip.components.erp.crud.api.ProductCRUD;
 import org.dieschnittstelle.ess.mip.components.shopping.api.PurchaseService;
 import org.dieschnittstelle.ess.mip.components.shopping.api.ShoppingException;
 import org.dieschnittstelle.ess.mip.components.shopping.cart.api.ShoppingCart;
@@ -62,6 +66,12 @@ public class PurchaseServiceImpl implements PurchaseService{
 
     @Inject
     private TouchpointAccess touchpointAccess;
+
+    @Inject
+    private ProductCRUD productCRUD;
+
+    @Inject
+    private StockSystem stockSystem;
 
     /*
      * verify whether campaigns are still valid
@@ -122,12 +132,13 @@ public class PurchaseServiceImpl implements PurchaseService{
     /*
      * TODO PAT2: complete the method implementation in your server-side component for shopping / purchasing
      */
-    private void checkAndRemoveProductsFromStock() {
+    private void checkAndRemoveProductsFromStock() throws ShoppingException{
         logger.info("checkAndRemoveProductsFromStock");
 
         for (ShoppingCartItem item : this.shoppingCart.getItems()) {
 
             // TODO: ermitteln Sie das AbstractProduct für das gegebene ShoppingCartItem. Nutzen Sie dafür dessen erpProductId und die ProductCRUD bean
+            AbstractProduct product = (AbstractProduct) productCRUD.readProduct(item.getErpProductId());
 
             if (item.isCampaign()) {
                 this.campaignTracking.purchaseCampaignAtTouchpoint(item.getErpProductId(), this.touchpoint,
@@ -140,10 +151,42 @@ public class PurchaseServiceImpl implements PurchaseService{
                 // - falls verfuegbar, aus dem Warenlager entfernen - nutzen Sie dafür die StockSystem bean
                 // (Anm.: item.getUnits() gibt Ihnen Auskunft darüber, wie oft ein Produkt, im vorliegenden Fall eine Kampagne, im
                 // Warenkorb liegt)
+                if(product instanceof Campaign campaign){
+                    campaign.getBundles().forEach(bundle->{
+                        try{
+                            int totalUnits = bundle.getUnits() * item.getUnits();
+
+                            int availableUnits = stockSystem.getUnitsOnStock(bundle.getProduct(), this.touchpoint.getErpPointOfSaleId());
+                            if(totalUnits <= availableUnits){
+                                stockSystem.removeFromStock(bundle.getProduct(),this.touchpoint.getErpPointOfSaleId(), totalUnits);
+                            }else{
+                                throw new ShoppingException("Nicht genügend Produkte verfügbar");
+                            }
+                        }catch (Exception e){
+                            logger.error("checkAndRemoveProductsFromStock(): Exception while removing products from stock: " + e.getMessage());
+                            throw new RuntimeException("checkAndRemoveProductsFromStock(): Exception while removing products from stock: " + e.getMessage());
+                        }
+                    });
+                }else{
+                    throw new ShoppingException("Product ist keine Campaign, auch wenn es als eine markiert ist.");
+                }
             } else {
                 // TODO: andernfalls (wenn keine Kampagne vorliegt) muessen Sie
                 // 1) das Produkt in der in item.getUnits() angegebenen Anzahl hinsichtlich Verfuegbarkeit ueberpruefen und
                 // 2) das Produkt, falls verfuegbar, in der entsprechenden Anzahl aus dem Warenlager entfernen
+                try{
+                    int totalUnits = item.getUnits();
+
+                    int availableUnits = stockSystem.getUnitsOnStock((IndividualisedProductItem) product, this.touchpoint.getErpPointOfSaleId() );
+                    if(totalUnits <= availableUnits){
+                        stockSystem.removeFromStock((IndividualisedProductItem) product,this.touchpoint.getErpPointOfSaleId(), totalUnits);
+                    }else{
+                        throw new ShoppingException("Nicht genügend Produkte verfügbar");
+                    }
+                }catch (Exception e){
+                    logger.error("checkAndRemoveProductsFromStock(): Exception while removing products from stock: " + e.getMessage());
+                    throw new RuntimeException("checkAndRemoveProductsFromStock(): Exception while removing products from stock: " + e.getMessage());
+                }
             }
 
         }
