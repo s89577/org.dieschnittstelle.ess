@@ -60,7 +60,7 @@ public class PurchaseServiceImpl implements PurchaseService{
     private AbstractTouchpoint touchpoint;
 
     @Inject
-    private ShoppingCartServiceImpl shoppingCartService;
+    private ShoppingCartService shoppingCartService;
 
     @Inject
     private CustomerCRUD customerCRUD;
